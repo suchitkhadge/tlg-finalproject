@@ -2,6 +2,7 @@
 
 import stats
 from flask import Flask
+from flask import session
 from flask import make_response
 from flask import request
 from flask import render_template
@@ -13,6 +14,7 @@ from flask_limiter.util import get_remote_address
 
 
 app = Flask(__name__)
+app.secret_key = "any random string"
 
 # create a limiter object from Limiter
 # limits are being performed by tracking the
@@ -26,10 +28,17 @@ limiter = Limiter(
 # entry point for our users
 # login.html points to /home
 @app.route("/")
-@app.route("/logout")
 def signin():
-    return render_template("signin.html")
+    if "username" in session:
+        user = session["username"]
+        return render_template("index.html", userID = user)
+    else:
+        return render_template("signin.html")
 
+@app.route("/logout")
+def signout():
+    session.pop("username", None)
+    return render_template("signin.html")
 
 # set the cookie and send it back to the user
 @app.route("/home", methods = ["POST", "GET"])
@@ -39,9 +48,10 @@ def setcookie():
         if request.form.get("nm"): # if nm was assigned via the POST
         #if request.form["nm"] <-- this also works, but returns ERROR if no nm
             user = request.form.get("nm") # grab the value of nm from the POST
+            session["username"] = user
         else: # if a user sent a post without nm then assign value defaultuser
             user = "defaultuser"
-
+        
         # Note that cookies are set on response objects.
         # Since you normally just return strings
         # Flask will convert them into response objects for you
