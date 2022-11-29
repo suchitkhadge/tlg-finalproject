@@ -1,7 +1,7 @@
 ######################################
 -------------FIFA SOCCER GAME APPLICATION------------------
 
-1. This application displays the games played during the FIFA games 2022. User needs to input the date in the format MM-DD-YYYY and it shows all the games played on that day. 
+1. This application displays the games played during the FIFA games 2022. User needs to login with a username. Once logged in, user needs to input the date in the format MM-DD-YYYY and it shows all the games played on that day. 
 2. For API call, example:
       a. http://127.0.0.1:2224/getdata/alldata
       b. http://127.0.0.1:2224/getdata/11-22-2022
