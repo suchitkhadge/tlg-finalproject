@@ -8,9 +8,21 @@ from flask import render_template
 from flask import redirect
 from flask import url_for
 from flask import jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 
 app = Flask(__name__)
+
+# create a limiter object from Limiter
+# limits are being performed by tracking the
+# REMOTE ADDRESS of the clients
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+
 # entry point for our users
 # login.html points to /home
 @app.route("/")
@@ -84,12 +96,14 @@ def login():
 
 #Get all data in JSON format
 @app.route("/getdata/alldata") # user can land at "/"
+@limiter.limit("10 per day")
 def index():
     # jsonify returns legal JSON
     return jsonify(stats.quiz)
 
 #Get the game data for the particular date in JSON format
 @app.route("/getdata/<user_date>") # user can land at "/"
+@limiter.limit("10 per day")
 def get_data(user_date):
     if user_date in stats.quiz:
         # jsonify returns legal JSON
